@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Prediction - LiverDX</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+    <script src="access.js" defer></script>
+</head>
+<body>
+    <div class="page">
+        <div class="page-container">
+            <div class="page-header">
+                <button id="themeToggle" class="theme-toggle">🌙</button>
+                <h1>🫀 LiverDX</h1>
+                <p>Patient Medical Analysis</p>
+                <div class="user-info">
+                    <span id="userDisplay"></span>
+                    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+                </div>
+            </div>
+
+            <div class="page-content prediction-content">
+                <div class="prediction-main">
+                    <section class="form-section patient-info">
+                        <h2>Patient Information</h2>
+                        <form id="predictionForm" onsubmit="return false;">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="Age">Age (years)</label>
+                                    <input type="number" id="Age" name="Age" min="0" max="120" step="1" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Gender">Gender</label>
+                                    <select id="Gender" name="Gender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="1">Male</option>
+                                        <option value="0">Female</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Total_Bilirubin">Total Bilirubin (mg/dL)</label>
+                                    <input type="number" id="Total_Bilirubin" name="Total_Bilirubin" min="0" step="any" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Direct_Bilirubin">Direct Bilirubin (mg/dL)</label>
+                                    <input type="number" id="Direct_Bilirubin" name="Direct_Bilirubin" min="0" step="any" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Alkaline_Phosphotase">Alkaline Phosphatase (U/L)</label>
+                                    <input type="number" id="Alkaline_Phosphotase" name="Alkaline_Phosphotase" min="0" step="any" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Alamine_Aminotransferase">Alamine Aminotransferase (U/L)</label>
+                                    <input type="number" id="Alamine_Aminotransferase" name="Alamine_Aminotransferase" min="0" step="any" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Aspartate_Aminotransferase">Aspartate Aminotransferase (U/L)</label>
+                                    <input type="number" id="Aspartate_Aminotransferase" name="Aspartate_Aminotransferase" min="0" step="any" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Total_Proteins">Total Proteins (g/dL)</label>
+                                    <input type="number" id="Total_Proteins" name="Total_Proteins" min="0" step="any" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Albumin">Albumin (g/dL)</label>
+                                    <input type="number" id="Albumin" name="Albumin" min="0" step="any" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Albumin_and_Globulin_Ratio">Albumin-Globulin Ratio</label>
+                                    <input type="number" id="Albumin_and_Globulin_Ratio" name="Albumin_and_Globulin_Ratio" min="0" step="any" required>
+                                </div>
+                            </div>
+
+                            <div class="button-group">
+                                <button type="submit" class="submit-btn">🔍 Get Prediction</button>
+                                <button type="button" class="reset-btn" onclick="resetFormAndClear()">🔄 Reset Form</button>
+                                <button type="button" class="history-btn" onclick="goToHistory()">📊 View History</button>
+                            </div>
+
+                            <!-- RESULT DISPLAY - SHOWS BELOW BUTTONS -->
+                            <div id="resultDisplay" class="result-display" style="display: none;">
+                                <div class="result-display-header">
+                                    <h3>📋 Prediction Result</h3>
+                                    <span class="result-display-time" id="resultDisplayTime"></span>
+                                </div>
+                                
+                                <div id="resultStatusBox" class="result-status-box">
+                                    <h2 id="resultMainStatus"></h2>
+                                </div>
+
+                                <div class="result-display-content">
+                                    <div class="result-row">
+                                        <span class="result-label">🔍 Prediction:</span>
+                                        <span class="result-output" id="resultDisplayValue"></span>
+                                    </div>
+                                    <div class="result-row">
+                                        <span class="result-label">📊 Status:</span>
+                                        <span class="result-output" id="resultDisplayStatus"></span>
+                                    </div>
+                                    <div class="result-row">
+                                        <span class="result-label">📈 Confidence:</span>
+                                        <span class="result-output" id="resultDisplayConfidence"></span>
+                                    </div>
+                                </div>
+
+                                <div class="result-display-note">
+                                    ℹ️ Click "<strong>🔄 Reset Form</strong>" to clear this result and enter new patient data
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section class="error-section" id="errorSection" style="display: none;">
+                        <div class="error-header">
+                            <h2>⚠️ Error</h2>
+                            <button type="button" class="close-btn" onclick="closeError()">✕</button>
+                        </div>
+                        <div class="error-card">
+                            <p id="errorMessage"></p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <footer class="page-footer">
+                <p>&copy; 2025 LiverDX | Machine Learning Application</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
