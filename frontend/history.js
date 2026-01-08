@@ -1,5 +1,10 @@
-// API Configuration
-const API_URL = 'http://localhost:5000';
+// API Configuration - hosted backend with local fallback
+const API_URL = (function(){
+    const host = (typeof window !== 'undefined' && window.location && window.location.hostname) ? window.location.hostname : '';
+    if (host.includes('liverdx.pages.dev') || host.includes('liverdx.onrender.com')) return 'https://liverdx.onrender.com';
+    if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:5000';
+    return 'https://liverdx.onrender.com';
+})();
 
 // Get current user from localStorage
 const currentUser = localStorage.getItem('currentUser');
